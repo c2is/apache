@@ -13,7 +13,7 @@ ENV APACHE_RUN_USER www-data
 ENV APACHE_RUN_GROUP www-data
 ENV APACHE_LOG_DIR /var/log/apache2
 
-ADD config/fastcgi.conf /etc/apache2/mods-available/
+ADD conf/fastcgi.conf /etc/apache2/mods-available/s
 
 RUN /bin/ln -sf ../mods-available/socache_shmcb.load /etc/apache2/mods-enabled/
 RUN /bin/ln -sf ../mods-available/ssl.conf /etc/apache2/mods-enabled/
@@ -27,9 +27,11 @@ RUN usermod -u 1000 www-data
 EXPOSE 80
 EXPOSE 443
 
-RUN a2enmod proxy \
-	&& a2enmod proxy_fcgi \
-	&& a2enmod actions\
-	&& a2enmod rewrite
+RUN a2enmod proxy 
+RUN a2enmod actions 
+RUN a2enmod rewrite 
+RUN a2enmod socache_shmcb
+RUN a2enmod proxy_fcgi
+RUN a2enmod headers
 
 CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
