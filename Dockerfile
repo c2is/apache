@@ -14,16 +14,15 @@ ENV APACHE_RUN_GROUP www-data
 ENV APACHE_LOG_DIR /var/log/apache2
 
 ADD conf/fastcgi.conf /etc/apache2/mods-available/
+ADD conf/default.conf /etc/apache2/sites-available/
 
 RUN /bin/ln -sf ../mods-available/ssl.conf /etc/apache2/mods-enabled/
 RUN /bin/ln -sf ../mods-available/ssl.load /etc/apache2/mods-enabled/
 
 RUN /bin/ln -sf ../sites-available/default-ssl /etc/apache2/sites-enabled/001-default-ssl
+RUN /bin/ln -sf ../sites-available/default.conf /etc/apache2/sites-enabled/
 
 RUN usermod -u 1000 www-data
-
-ADD config/default.conf /etc/apache2/sites-available/
-RUN /bin/ln -sf ../sites-available/default.conf /etc/apache2/sites-enabled/
 
 EXPOSE 80
 EXPOSE 443
