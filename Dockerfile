@@ -22,6 +22,9 @@ RUN /bin/ln -sf ../sites-available/default-ssl /etc/apache2/sites-enabled/001-de
 
 RUN usermod -u 1000 www-data
 
+ADD config/default.conf /etc/apache2/sites-available/
+RUN /bin/ln -sf ../sites-available/default.conf /etc/apache2/sites-enabled/
+
 EXPOSE 80
 EXPOSE 443
 
