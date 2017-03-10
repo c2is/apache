@@ -32,5 +32,9 @@ RUN a2enmod socache_shmcb
 RUN a2enmod proxy_fcgi
 RUN a2enmod headers
 
-CMD rm -rf /run/httpd/* /tmp/httpd*
-CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+RUN a2enmod ext_filter
+
+COPY apache2-foreground /usr/local/bin/
+RUN chmod +x /usr/local/bin/apache2-foreground
+
+CMD ["apache2-foreground"]
