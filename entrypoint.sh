@@ -27,7 +27,7 @@ cat <<EOF >> /etc/apache2/sites-available/vhost-website.conf
 	      AllowOverride All
         </Directory>
 	<FilesMatch .php$>
-            SetHandler "proxy:fcgi://127.0.0.1:9000"
+            SetHandler "proxy:fcgi://php:9000"
     	</FilesMatch>
 </VirtualHost>
 <VirtualHost *:443>
@@ -53,7 +53,7 @@ cat <<EOF >> /etc/apache2/sites-available/vhost-website.conf
         BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
         RequestHeader set X-Forwarded-Proto "https"
         <FilesMatch .php$>
-            SetHandler "proxy:fcgi://127.0.0.1:9000"
+            SetHandler "proxy:fcgi://php:9000"
     	</FilesMatch>
 </VirtualHost>
 EOF
