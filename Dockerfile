@@ -19,6 +19,7 @@ RUN /bin/ln -sf ../mods-available/ssl.conf /etc/apache2/mods-enabled/
 RUN /bin/ln -sf ../mods-available/ssl.load /etc/apache2/mods-enabled/
 
 RUN /bin/ln -sf ../sites-available/default-ssl /etc/apache2/sites-enabled/001-default-ssl
+ADD ./symfony.conf /etc/apache2/sites-available/
 
 RUN usermod -u 1000 www-data
 
@@ -31,6 +32,8 @@ RUN a2enmod rewrite
 RUN a2enmod socache_shmcb
 RUN a2enmod proxy_fcgi
 RUN a2enmod headers
+
+RUN a2ensite symfony
 
 RUN a2enmod ext_filter
 
