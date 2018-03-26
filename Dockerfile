@@ -1,43 +1,26 @@
-FROM debian:jessie
+FROM debian:stretch
 
-RUN echo "deb http://ftp.es.debian.org/debian stable main contrib non-free" > /etc/apt/sources.list
-RUN echo "deb-src http://ftp.es.debian.org/debian stable main contrib non-free" >> /etc/apt/sources.list
-RUN echo "deb http://ftp.debian.org/debian/ wheezy-updates main contrib non-free" >> /etc/apt/sources.list
-RUN echo "deb-src http://ftp.debian.org/debian/ wheezy-updates main contrib non-free" >> /etc/apt/sources.list
-RUN echo "deb http://security.debian.org/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
-RUN echo "deb-src http://security.debian.org/ wheezy/updates main contrib non-free" >> /etc/apt/sources.list
-
-RUN apt-get update && apt-get -y install apache2 libapache2-mod-fastcgi && apt-get clean
+RUN apt-get update && apt-get -y install apache2 libapache2-mod-fcgid && apt-get clean
 
 ENV APACHE_RUN_USER www-data
 ENV APACHE_RUN_GROUP www-data
 ENV APACHE_LOG_DIR /var/log/apache2
 
-ADD conf/fastcgi.conf /etc/apache2/mods-available/
+RUN mkdir /etc/apache2/ssl
+RUN mkdir -p /var/www/website/web
 
-RUN /bin/ln -sf ../mods-available/ssl.conf /etc/apache2/mods-enabled/
-RUN /bin/ln -sf ../mods-available/ssl.load /etc/apache2/mods-enabled/
+RUN a2enmod proxy actions rewrite ssl headers
 
-RUN /bin/ln -sf ../sites-available/default-ssl /etc/apache2/sites-enabled/001-default-ssl
-ADD ./symfony.conf /etc/apache2/sites-available/
+ADD conf/ssl.key /etc/apache2/ssl/ssl.key
+ADD conf/ssl.crt /etc/apache2/ssl/ssl.crt
 
 RUN usermod -u 1000 www-data
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod 777 /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+RUN ln -s /etc/apache2/sites-available/vhost-website.conf /etc/apache2/sites-enabled/vhost-website.conf
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
 EXPOSE 80
 EXPOSE 443
-
-RUN a2enmod proxy
-RUN a2enmod actions
-RUN a2enmod rewrite
-RUN a2enmod socache_shmcb
-RUN a2enmod proxy_fcgi
-RUN a2enmod headers
-
-RUN a2ensite symfony
-
-RUN a2enmod ext_filter
-
-COPY apache2-foreground /usr/local/bin/
-RUN chmod +x /usr/local/bin/apache2-foreground
-
-CMD ["apache2-foreground"]
